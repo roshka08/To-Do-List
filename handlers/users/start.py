@@ -3,10 +3,12 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from loader import dp, db, bot
 from data.config import ADMINS
 from utils.extra_datas import make_title
+from keyboards.default.main import main_page_buttons
+from aiogram.dispatcher import FSMContext
 
 
-@dp.message_handler(CommandStart())
-async def bot_start(message: types.Message):
+@dp.message_handler(CommandStart(), state="*")
+async def bot_start(message: types.Message, state: FSMContext):
     """
             MARKDOWN V2                     |     HTML
     link:   [Google](https://google.com/)   |     <a href='https://google.com/'>Google</a>
@@ -36,3 +38,5 @@ async def bot_start(message: types.Message):
     else:
         await bot.send_message(chat_id=ADMINS[0], text=f"[{make_title(full_name)}](tg://user?id={message.from_user.id}) bazaga oldin qo'shilgan", disable_web_page_preview=True, parse_mode=types.ParseMode.MARKDOWN_V2)
     await message.answer(f"Xush kelibsiz\! {make_title(full_name)}", parse_mode=types.ParseMode.MARKDOWN_V2)
+    await state.finish()
+    await message.answer('Quydagilardan birini tanlang: ', reply_markup=main_page_buttons)
