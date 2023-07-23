@@ -52,6 +52,18 @@ class Database:
         """
         await self.execute(sql, execute=True)
 
+    async def create_table_add_task(self):
+        sql = """
+        CREATE TABLE IF NOT EXISTS add_task (
+        id SERIAL PRIMARY KEY,
+        task_title VARCHAR(355) NULL unique,
+        priority VARCHAR(100) NULL,
+        completed BOOLEAN NULL,
+        time VARCHAR(150) NULL
+        );
+        """
+        await self.execute(sql, execute=True)
+
     @staticmethod
     def format_args(sql, parameters: dict):
         sql += " AND ".join(
@@ -62,11 +74,19 @@ class Database:
     async def add_user(self, full_name, username, telegram_id):
         sql = "INSERT INTO users (full_name, username, telegram_id) VALUES($1, $2, $3) returning *"
         return await self.execute(sql, full_name, username, telegram_id, fetchrow=True)
+    
+    async def add_task(self, task_title, priority, completed, time):
+        sql = "INSERT INTO add_task (task_title, priority, completed, time) VALUES($1, $2, $3, $4) returning *"
+        return await self.execute(sql, task_title, priority, completed, time, fetchrow=True)
 
     async def select_all_users(self):
         sql = "SELECT * FROM Users"
         return await self.execute(sql, fetch=True)
 
+    async def select_all_tasks(self):
+        sql = "SELECT * FROM add_task"
+        return await self.execute(sql, fetch=True)
+    
     async def select_user(self, **kwargs):
         sql = "SELECT * FROM Users WHERE "
         sql, parameters = self.format_args(sql, parameters=kwargs)
@@ -79,9 +99,20 @@ class Database:
     async def update_user_username(self, username, telegram_id):
         sql = "UPDATE Users SET username=$1 WHERE telegram_id=$2"
         return await self.execute(sql, username, telegram_id, execute=True)
+    
+    async def update_task_complete(self, task_completed, id):
+        sql = "UPDATE add_task SET completed=$1 WHERE id=$2"
+        return await self.execute(sql, task_completed, id, execute=True)
 
     async def delete_users(self):
         await self.execute("DELETE FROM Users WHERE TRUE", execute=True)
 
+    async def delete_task(self, task_id):
+        sql = "DELETE FROM add_task WHERE id=$1"
+        return await self.execute(sql, task_id, execute=True)
+    
     async def drop_users(self):
         await self.execute("DROP TABLE Users", execute=True)
+
+    async def drop_tasks(self):
+        await self.execute("DROP TABLE add_task", execute=True)
