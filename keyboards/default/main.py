@@ -1,7 +1,7 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
 add_do_task = KeyboardButton(text="🆕 Vazifa Qo'shish")
-see_all_tasks = KeyboardButton(text="📜 Vazifalarni Qo'rish")
+see_all_tasks = KeyboardButton(text="📜 Vazifalarni Ko'rish")
 back_button = KeyboardButton(text="⬅️ Orqaga")
 back_main_button = KeyboardButton(text="🏠 Bosh Menyu")
 

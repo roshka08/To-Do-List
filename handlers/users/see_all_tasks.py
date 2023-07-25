@@ -5,9 +5,9 @@ from keyboards.default.main import main_page_buttons
 from aiogram.dispatcher import FSMContext
 
 
-@dp.message_handler(text="📜 Vazifalarni Qo'rish", state="*")
+@dp.message_handler(text="📜 Vazifalarni Ko'rish", state="*")
 async def see_all_tasks(message: types.Message, state: FSMContext):
-    tasks = await db.select_all_tasks()
+    tasks = await db.select_all_tasks(from_who=message.from_user.first_name)
 
     if len(tasks) >= 1:
         for task in tasks:
@@ -48,3 +48,7 @@ async def really_delete_task(call: types.CallbackQuery, state: FSMContext):
     await call.message.delete()
     await db.delete_task(task_id=task_id)
     await call.message.answer("Sizning Vazifangiz O'chirildi!!!", reply_markup=main_page_buttons)
+
+@dp.callback_query_handler(text='no')
+async def dont_delete_task(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Sizning Vazifangiz O'chirilmadi!")

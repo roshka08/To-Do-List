@@ -49,7 +49,8 @@ async def get_task_check(message: types.Message, state: FSMContext):
         task_title = data['task_title']
         task_priority = data['task_priority']
         task_completed = data['task_completed']
-        await db.add_task(task_title=task_title, priority=task_priority, completed=task_completed, time=str(date.today()))
+        task_author = message.from_user.first_name
+        await db.add_task(task_title=task_title, priority=task_priority, completed=task_completed, time=str(date.today()), from_who=task_author)
         await state.finish()
     else:
         await message.answer("Siz Vazifangizni Rad Qildingiz!", reply_markup=main_page_buttons)

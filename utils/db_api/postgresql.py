@@ -59,7 +59,8 @@ class Database:
         task_title VARCHAR(355) NULL unique,
         priority VARCHAR(100) NULL,
         completed BOOLEAN NULL,
-        time VARCHAR(150) NULL
+        time VARCHAR(150) NULL,
+        from_who VARCHAR(255) NULL
         );
         """
         await self.execute(sql, execute=True)
@@ -75,17 +76,17 @@ class Database:
         sql = "INSERT INTO users (full_name, username, telegram_id) VALUES($1, $2, $3) returning *"
         return await self.execute(sql, full_name, username, telegram_id, fetchrow=True)
     
-    async def add_task(self, task_title, priority, completed, time):
-        sql = "INSERT INTO add_task (task_title, priority, completed, time) VALUES($1, $2, $3, $4) returning *"
-        return await self.execute(sql, task_title, priority, completed, time, fetchrow=True)
+    async def add_task(self, task_title, priority, completed, time, from_who):
+        sql = "INSERT INTO add_task (task_title, priority, completed, time, from_who) VALUES($1, $2, $3, $4, $5) returning *"
+        return await self.execute(sql, task_title, priority, completed, time, from_who, fetchrow=True)
 
     async def select_all_users(self):
         sql = "SELECT * FROM Users"
         return await self.execute(sql, fetch=True)
 
-    async def select_all_tasks(self):
-        sql = "SELECT * FROM add_task"
-        return await self.execute(sql, fetch=True)
+    async def select_all_tasks(self, from_who):
+        sql = "SELECT * FROM add_task WHERE from_who=$1"
+        return await self.execute(sql, from_who, fetch=True)
     
     async def select_user(self, **kwargs):
         sql = "SELECT * FROM Users WHERE "
